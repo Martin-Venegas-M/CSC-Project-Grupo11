@@ -21,7 +21,7 @@ El grupo se ha propuesto realizar un análisis del Tribunal Constitucional de Ch
 ## Problematización
 Instrumentalización del Tribunal Constitucional por determinados grupos.
 
-# Autores para la problematización
+## Autores para la problematización
 - Atria, F
 - Bassa, J
 - Heiss, C
@@ -36,7 +36,13 @@ Cómo funciona el proceso, especialmente desde el analisis de redes. Relación c
 
 Explorar las redes políticas dentro del proceso de revisión de proyectos de ley, leyes o tratados desde el Tribunal Constitucional
 
-1. Identificar grupos políticos que recurren al Tribunal Constitucional para frenar reformas
-2. Identificar los contenidos puestos en requerimiento
+1. Identificar grupos políticos que presentar proyectos de ley, leyes o tratados con caracter constitucional 
+2. Identificar grupos políticos que recurren al Tribunal Constitucional para frenar reformas
+3. Identificar los contenidos puestos en requerimiento
+
+## Análisis
+### Momentos
+1. Presentación de proyectos
+2. Discusión de sentencias
 
 
