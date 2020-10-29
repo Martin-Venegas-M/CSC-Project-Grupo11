@@ -24,7 +24,7 @@ library(rebus)
 library(lubridate)
 ```
 
-## Operación
+## Operación chihuahua
 A continuación se desarrolla el web scrapping:
 ```{r Scrapping, echo=True}
 #Carga de la web
