@@ -45,4 +45,17 @@ Explorar las redes políticas dentro del proceso de revisión de proyectos de le
 1. Presentación de proyectos
 2. Discusión de sentencias
 
+## Tareas por realizar:
+### Teorico
+- Problematizar y redactar (Cristobal)
+
+### Practico
+#### General
+Hacer el mismo procedimiento presentado anteriormente con todas las páginas de la búsqueda
+
+#### Especificamente: 
+- Buscar una técnica para hacer lo anterior automaticamente (Jan)
+- En HTML filtrar por parrafo **Visto** (Martin)
+- Buscar quienes presentan los proyectos (Revisar API Congreso) (Martin)
+
 
