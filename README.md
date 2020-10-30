@@ -7,13 +7,13 @@
 # CSC-Project-Grupo11 <br>
 *Ciencias Sociales Computacionales*
 
-**Descripción:** Este es el repositorio para los proyectos realizados en el ramo Ciencias Sociales Computacionales - Analisis de Rede Sociales y Procesamiento de Lenguaje Natural, a cargo del profesor Naim Bro.
+**Descripción:** Este es el repositorio para los proyectos realizados en el ramo Ciencias Sociales Computacionales - Análisis de Rede Sociales y Procesamiento de Lenguaje Natural, a cargo del profesor Naim Bro.
 
 ## Grupo 11:
 
-- Cristobal Ortiz
+- Cristóbal Ortiz
 - Jan Dimter
-- Martin Venegas
+- Martín Venegas
 
 ## Tema:
 El grupo se ha propuesto realizar un análisis del Tribunal Constitucional de Chile desde un análisis en torno a aquellas leyes, tratados o proyectos de ley que han sido declarados inconstitucionales por requerimiento de parlamentarios. Se realizarán las técnicas de web scrapping, análisis de redes y procesamiento de lenguaje natural.
@@ -22,21 +22,21 @@ El grupo se ha propuesto realizar un análisis del Tribunal Constitucional de Ch
 Instrumentalización del Tribunal Constitucional por determinados grupos.
 
 ## Autores para la problematización
-- Atria, F
-- Bassa, J
-- Heiss, C
-- Baño, R
+- Átria, F.
+- Bassa, J.
+- Heiss, C.
+- Baño, R.
 
 Revisar Zotero
 
 ## Relevancia Sociológica:
-Cómo funciona el proceso, especialmente desde el analisis de redes. Relación conglomerados y ciertos parlamentarios.
+Cómo funciona el proceso, especialmente desde el análisis de redes. Relación conglomerados y ciertos parlamentarios.
 
 ## Objetivos
 
 Explorar las redes políticas dentro del proceso de revisión de proyectos de ley, leyes o tratados desde el Tribunal Constitucional
 
-1. Identificar grupos políticos que presentar proyectos de ley, leyes o tratados con caracter constitucional 
+1. Identificar grupos políticos que presentar proyectos de ley, leyes o tratados con carácter constitucional 
 2. Identificar grupos políticos que recurren al Tribunal Constitucional para frenar reformas
 3. Identificar los contenidos puestos en requerimiento
 
@@ -46,16 +46,16 @@ Explorar las redes políticas dentro del proceso de revisión de proyectos de le
 2. Discusión de sentencias
 
 ## Tareas por realizar:
-### Teorico
-- Problematizar y redactar (Cristobal)
+### Teórico
+- Problematizar y redactar (Cristóbal)
 
-### Practico
+### Práctico
 #### General
 Hacer el mismo procedimiento presentado anteriormente con todas las páginas de la búsqueda
 
-#### Especificamente: 
-- Buscar una técnica para hacer lo anterior automaticamente (Jan)
-- En HTML filtrar por parrafo **Visto** (Martin)
-- Buscar quienes presentan los proyectos (Revisar API Congreso) (Martin)
+#### Específicamente: 
+- Buscar una técnica para hacer lo anterior automáticamente (Jan)
+- En HTML filtrar por párrafo **Visto** (Martín)
+- Buscar quienes presentan los proyectos (Revisar API Congreso) (Martín)
 
 

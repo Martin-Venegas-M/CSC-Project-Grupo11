@@ -41,4 +41,44 @@ TC_conform <- submit_form(session=TC_session, form=form2)
 TC_html <- read_html(TC_conform)
 #Extracción tabla de resultados
 TC_table <- html_table(TC_conform, fill=TRUE)[[2]]
+
+páginas <-TC_html %>% html_nodes("center a") %>% html_text()%>% .[-length(.)]
+
+
+txt<-"Requerimiento"
+cat<-"4"
+
+#Función superior
+scrapTC <- function (cat,txt) {
+  TC_link <-'https://www.tribunalconstitucional.cl/sentencias/busqueda-avanzada'
+  TC_web <- read_html(TC_link)
+  form_base <- html_form(TC_web)[[3]]
+  form_beta <- set_values(form_base, materia= cat, texto=txt)
+  TC_session <- html_session(TC_link)
+  TC_conform <- submit_form(session=TC_session, form=form_beta)
+  TC_resultado_beta <- read_html(TC_conform)
+  
+  #Scrapeo número de páginas
+  paginas <-TC_resultado_beta %>% html_nodes("center a") %>% html_text()%>% .[-length(.)]
+  #Lista con múltiples forms base
+  forms_mult_base<- list(form_base)[rep(1,length(paginas))]
+  
+ #Creación lista con n formularios rellenados con el número de páginas
+  forms_mult_rell <- list()  # 1. output
+  for( i in seq_along(paginas)){
+    forms_mult_rell[[i]] <- set_values(form_base, materia= cat, texto=txt, pagina =i)}
+  submit_forms<-lapply(forms_mult_rell,submit_form,session=TC_session)
+  read_results<-lapply(submit_forms,read_html)
+  extracc_tablas2<- lapply(read_results,html_nodes,css="form table:last-child table")
+  extracc_tablas_final<- lapply(extracc_tablas2,html_table,fill=TRUE,header=TRUE)
+  prueba1 <-unlist(extracc_tablas_final,recursive = FALSE)
+  #largo_lista <- length(prueba1)
+  tabla_síntesis<-Reduce(bind_rows, prueba1)
+  return(tabla_síntesis)
+}
+#Ejemplo, buscaremos sentencias relativas a
+#Materia: Control de constitucionalidad de leyes y tratados (Art.19 nº1) ("2")
+#Palabra clave: "sexual"
+Ejemplo <-scrapTC("2","sexual")
+Ejemplo
 ```
