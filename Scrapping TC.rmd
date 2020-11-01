@@ -13,80 +13,61 @@ Descripción: Este RMarkdown realizará la técnica de web-scrapping a la págin
 # Configuración del .rmd y carga de paquetes.
 knitr::opts_chunk$set(echo = FALSE)
 ## Paquetes
-library(tidyverse)
-# Parsing of HTML/XML files
-library(rvest)
-# String manipulation
-library(stringr)
-# Verbose regular expressions
-library(rebus)
-# Eases DateTime manipulation
-library(lubridate)
+pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate,sjmisc)
 ```
 
 ## Operación
 A continuación se desarrolla el web scrapping:
 ```{r Scrapping Manual, echo=True}
+# Cargas
+txt<-"Requerimiento"
+cat<-"4"
 #Carga de la web
 TC_link <-'https://www.tribunalconstitucional.cl/sentencias/busqueda-avanzada'
 #Lectura del HTML
 TC_web <- read_html(TC_link)
 #Carga del formulario y relleno de búsqueda
-form <- html_form(TC_web)[[3]]
-form2 <- set_values(form, materia= "4", texto="Requerimiento")
-form2$url <- ""
-TC_session <- html_session("https://www.tribunalconstitucional.cl/sentencias/busqueda-avanzada")
-TC_conform <- submit_form(session=TC_session, form=form2)
+form_base <- html_form(TC_web)[[3]]
+form_beta <- set_values(form_base, materia= cat, texto=txt)
+TC_session <- html_session(TC_link)
+TC_conform <- submit_form(session=TC_session, form=form_beta)
 #Lectura del resultado
-TC_html <- read_html(TC_conform)
-#Extracción tabla de resultados
-TC_table <- html_table(TC_conform, fill=TRUE)[[2]]
-
-páginas <-TC_html %>% html_nodes("center a") %>% html_text()%>% .[-length(.)]
-
-
-txt<-"Requerimiento"
-cat<-"4"
-
-  TC_link <-'https://www.tribunalconstitucional.cl/sentencias/busqueda-avanzada'
-  TC_web <- read_html(TC_link)
-  form_base <- html_form(TC_web)[[3]]
-  form_beta <- set_values(form_base, materia= cat, texto=txt)
-  TC_session <- html_session(TC_link)
-  TC_conform <- submit_form(session=TC_session, form=form_beta)
-  TC_resultado_beta <- read_html(TC_conform)
+TC_resultado_beta <- read_html(TC_conform)
+#Scrapeo número de páginas
+paginas <-TC_resultado_beta %>% html_nodes("center a") %>% html_text()%>% .[-length(.)]
+#Lista con múltiples forms base
+forms_mult_base<- list(form_base)[rep(1,length(paginas))]
   
-   paginas <-TC_resultado_beta %>% html_nodes("center a") %>% html_text()%>% .[-length(.)]
-  #Lista con múltiples forms base
-  forms_mult_base<- list(form_base)[rep(1,length(paginas))]
+#Creación lista con n formularios rellenados con el número de páginas
+forms_mult_rell <- list()  # 1. output
+
+# Resultados scrappeados por pagina
+for( i in seq_along(paginas)){
+forms_mult_rell[[i]] <- set_values(form_base, materia= cat, texto=txt, pagina =i)}
+submit_forms<-lapply(forms_mult_rell,submit_form,session=TC_session)
+read_results<-lapply(submit_forms,read_html)
   
- #Creación lista con n formularios rellenados con el número de páginas
-  forms_mult_rell <- list()  # 1. output
-  for( i in seq_along(paginas)){
-    forms_mult_rell[[i]] <- set_values(form_base, materia= cat, texto=txt, pagina =i)}
-  submit_forms<-lapply(forms_mult_rell,submit_form,session=TC_session)
-  read_results<-lapply(submit_forms,read_html)
-  
-   links_p1 <- html_nodes(read_results[[1]], "div tr td a") %>% html_attr("href")
-   links_p1 <- links_p1[c(4,8,16,21,27,32,36,41,46,50)]
-   links_p2 <- html_nodes(read_results[[2]], "div tr td a") %>% html_attr("href")
-   links_p2 <- links_p2[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p3 <- html_nodes(read_results[[3]], "div tr td a") %>% html_attr("href")
-   links_p3 <- links_p3[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p4 <- html_nodes(read_results[[4]], "div tr td a") %>% html_attr("href")
-   links_p4 <- links_p4[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p5 <- html_nodes(read_results[[5]], "div tr td a") %>% html_attr("href")
-   links_p5 <- links_p5[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p6 <- html_nodes(read_results[[6]], "div tr td a") %>% html_attr("href")
-   links_p6 <- links_p6[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p7 <- html_nodes(read_results[[7]], "div tr td a") %>% html_attr("href")
-   links_p7 <- links_p7[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p8 <- html_nodes(read_results[[8]], "div tr td a") %>% html_attr("href")
-   links_p8 <- links_p8[c(4,8,12,16,20,24,28,32,36,40)]
-   links_p9 <- html_nodes(read_results[[9]], "div tr td a") %>% html_attr("href")
-   links_p9 <- links_p9[c(4,8,12,16,20,24,28,32,36,40)]
+# Crear variable con los links
+links_p1 <- html_nodes(read_results[[1]], "div tr td a") %>% html_attr("href")
+links_p1 <- links_p1[c(4,8,16,21,27,32,36,41,46,50)] # No sigue la misma estructura
+links_p2 <- html_nodes(read_results[[2]], "div tr td a") %>% html_attr("href")
+links_p2 <- links_p2[c(4,8,12,16,20,24,28,32,36,40)]
+links_p3 <- html_nodes(read_results[[3]], "div tr td a") %>% html_attr("href")
+links_p3 <- links_p3[c(4,8,12,16,20,24,28,32,36,40)]
+links_p4 <- html_nodes(read_results[[4]], "div tr td a") %>% html_attr("href")
+links_p4 <- links_p4[c(4,8,12,16,20,24,28,32,36,40)]
+links_p5 <- html_nodes(read_results[[5]], "div tr td a") %>% html_attr("href")
+links_p5 <- links_p5[c(4,8,12,16,20,24,28,32,36,40)]
+links_p6 <- html_nodes(read_results[[6]], "div tr td a") %>% html_attr("href")
+links_p6 <- links_p6[c(4,8,12,16,20,24,28,32,36,40)]
+links_p7 <- html_nodes(read_results[[7]], "div tr td a") %>% html_attr("href")
+links_p7 <- links_p7[c(4,8,12,16,20,24,28,32,36,40)]
+links_p8 <- html_nodes(read_results[[8]], "div tr td a") %>% html_attr("href")
+links_p8 <- links_p8[c(4,8,12,16,20,24,28,32,36,40)]
+links_p9 <- html_nodes(read_results[[9]], "div tr td a") %>% html_attr("href")
+links_p9 <- links_p9[c(4,8,12,16,20,24,28,32,36,40)]
    
-  links <- c(links_p1, links_p2, links_p3, links_p4, links_p5, links_p6, links_p7, links_p8, links_p9)
+links <- c(links_p1, links_p2, links_p3, links_p4, links_p5, links_p6, links_p7, links_p8, links_p9)
 ```
 
 ```{r Scrapping Create Function, echo=True}
@@ -132,7 +113,9 @@ Ejemplo
 # Aplicar la funcion elaborada para categoria "Constitucionalidad de Proyectos de Ley (Art 93 N3)
 # Palabra clave: Requerimiento
 Req <- scrapTC("4", "Requerimiento")
+```
 
+```{r Modificar dataset}
 # Modificar dataset
 Req <- Req[,-c(3,5)] # Eliminar columnas innecesarias
 Req$links <- links # Agregar columna de links creada semi-manualmente
@@ -144,7 +127,16 @@ Req$links[6] <- "http://www.tribunalconstitucional.cl/wp-content/uploads/fallo_r
 Req$links[7] <- "http://www.tribunalconstitucional.cl/wp-content/uploads/Rol2787.html"
 Req$links[8] <- "http://www.tribunalconstitucional.cl/wp-content/uploads/SRol2777-15-CPT.html"
 
+# Transformar date a formato fecha
 
+Req$Fecha <- lubridate::dmy(Req$Fecha)
+
+# Sacar solo el year
+Req$year<- lubridate::year(Req$Fecha)
+
+```
+
+```{r Crear funciones y lista de parrafos}
 # Extraer parrafo en donde se menciona a los Senadores que presenan el requerimiento.
 
 # Funcion para crear bases con los parrafos de las Sentencias
@@ -163,9 +155,15 @@ findreq <- function(base) {
   return(grep("miembros", base))
 }
 
+
+# Funcion para buscar boletin
+findbol <- function(base) {
+  return(grep("Boletín", base))
+}
+
 # For para crear lista con los parrafos extraidos
-parrafos <- list()
-Ss <- 1:90
+parrafos <- list() # Output vacio
+Ss <- 1:90 #Numero de elementos de la lista.
 
 for( i in seq_along(Ss)){
     parrafos[[i]] <- createS("S", i)}
@@ -173,7 +171,12 @@ for( i in seq_along(Ss)){
 # Buscar los parrafos con la palabra "miembros" en ella.
 lapply(parrafos, findreq)
 
-# Comprobar
+# Buscar los parrafos con la palabra "miembros" en ella.
+lapply(parrafos, findbol)
+```
+
+```{r Comprobar parrafos}
+# Comprobar que salgan los nombres en los parrafos.
 
 parrafos[[1]][15]
 parrafos[[2]][8]
@@ -184,7 +187,57 @@ parrafos[[6]][3]
 parrafos[[7]][56]
 parrafos[[8]][4]
 parrafos[[9]][6]
-parrafos[[19]][10]
+parrafos[[10]][7]
 
+parrafos[[11]][6]
+parrafos[[12]][4]
+parrafos[[13]][7]
+parrafos[[14]][3]
+parrafos[[15]][25]
+#parrafos[[16]][] Revisar
+parrafos[[17]][3]
+parrafos[[18]][95]
+#parrafos[[19]][] Revisar
+parrafos[[20]][9]
+
+# Crear variable de nombres a partir de lo revisado de forma manual (buscar automatizar)
+nombres<- c("Carmen Gloria Aravena Acuña, Jacqueline Van Rysselberghe Herrera, Ena Von Baer Jahn, Juan Castro Prieto, Francisco Chahuán Chahuán, Juan Antonio Coloma Correa, José García Ruminot, Alejandro García Huidobro Sanfuentes, Rodrigo Galilea Vial, Víctor Pérez Varela, Kenneth Pugh Olavarría y David Sandoval Plaza", #1
+          
+          "Javier Macaya Danús, Leopoldo Pérez Lahsen, Jorge Alessandri Vergara, Pedro Pablo Álvarez-Salamanca Ramírez, Sandra Amar Mancilla, Nino Baltolu Rasera, Ramón Barros Montero, Bernardo Berger Fett, Sergio Bobaclilla Muñoz, José Miguel Castro Bascuñán,Sofia Cid Versalovic, Juan Antonio Coloma Álamos, Álvaro CarterFernández, Catalina Del Real Mihovilovic, Mario Desbordes Jiménez, Eduardo Durán Salinas, Francisco Eguiguren Correa, Camila Flores Oporto, Juan Fuenzalida Cobo, Sergio Gahona Salazar, Javier Hernández Hernández, María José Hoffmann Opazo, Harry Jürgensen Rundshagen, Issa Kort Garriga, Carlos Kuschel Silva, Joaquín Lavín León, Andrés Longton Herrera, Patricio Melero Abaroa, Miguel Mellado Suazo, Celso Morales Muñoz, Cristhian Moreira Barros, Francesca Muñoz González, Nicolás Noman Garrido, Iván Norambuena Farías, Paulina Núñez Urrutia, Erika Olivera De la Fuente, Ximena Ossandon Irarrázabal, Luis Pardo Sainz, Diego Paulsen Kehr, Pablo Prieto Lorca, Guillermo Ramírez Diez, Jorge Rathgeb Schifferli, Rolando Rentería Moller, Hugo Rey Martínez, Leonidas Romero Sáez, Gustavo Sanhueza Dueñas, Alejandro Santana Tirachini, Frank Sauerbaum Muñoz, Diego Schalper Sepúlveda, Sebastián Torrealba Alvarado, Renzo Trisotti Martínez, Virginia Troncoso Hellman, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Gastón Von Mühlenbrock Zamora", #2
+          
+          "Juan Antonio Coloma Correa, Francisco Chahuán Chahuán, Alejandro García-Huidobro Sanfuentes, José García Ruminot, Iván Moreira Barros, Hernán Larraín Fernández, Manuel José Ossandón Irarrázabal, Víctor Pérez Varela, Baldo Prokurica Prokurica, Jacqueline Van Rysselbergue Herrera y Ena Von Baer Jahn", #3
+          
+          "No menciona nombres", #4
+          
+          "Andrés Allamand Zavala, Francisco Chahuán Chahuán, Juan Antonio Coloma Correa, Alberto Espina Otero, José García Ruminot, Alejandro García-Huidobro Sanfuentes, Hernán Larraín Fernández, Iván Moreira Barros, Manuel José Ossandón Irarrázabal, Lily Pérez San Martín, Víctor Pérez Varela, Baldo Prokurica Prokurica, Jacqueline Van Rysselbergue Herrera y Ena Von Baer Jahn", #5
+          
+          "Pedro Pablo Álvarez-Salamanca Ramírez, Ramón Barros Montero, Jaime Bellolio Avaria, Juan Antonio Coloma Álamos, Felipe De Mussy Hiriart, Sergio Gahona Salazar, Romilio  Gutiérrez Pino, Gustavo Hasbún Selume, Javier Hernández Hernández, María José Hoffmann Opazo, José Antonio Kast Rist, Issa Kort Garriga, Joaquín Lavín León, Javier Macaya Danús, Patricio Melero Abarca, Andrea Molina Oliva, Celso Morales Muñoz, Claudia Nogueira Fernández, Iván Norambuena Farías, David Sandoval Plaza, Ernesto Silva Méndez, Arturo Squella Ovalle, Renzo Trisotti Martínez, Marisol Turres Figueroa, Jorge Ulloa Aguillón, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Felipe Ward Edwards, José Manuel Edwards Silva y Felipe Kast Sommerhoff", #6
+          
+          "No menciona nombres", #7
+          "No menciona nombres", #8
+          
+          "Pedro Pablo Álvarez-Salamanca Ramírez,  Ramón Barros Montero, Jaime Bellolio Avaria, Juan Antonio Coloma Álamos, Felipe De Mussy Hiriart, Sergio Gahona Salazar, Romilio Gutiérrez Pino, Gustavo Hasbún Selume, Javier Hernández Hernández, María José Hoffmann Opazo, José Antonio Kast Rist, Issa Kort Garriga, Joaquín Lavín León, Javier Macaya Danús, Patricio Melero Abarca, Andrea Molina Oliva, Celso Morales Muñoz, Claudia Nogueira Fernández, Iván Norambuena Farías, David Sandoval Plaza, Ernesto Silva Méndez, Arturo Squella Ovalle, Renzo  Trisotti Martínez; Marisol Turres Figueroa, Jorge Ulloa Aguillón, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Felipe Ward Edwards,  José Manuel Edwards Silva y Felipe Kast Sommerhoff", #9
+          
+          "No menciona nombres", #10
+          rep(NA, 80))
+
+# Agregar variable nombres a la base
+Req$nombres <- nombres
 ```
+
+```{r Descriptivos}
+# Ver ocurrencia de requerimientos por anos
+frq(Req$year)
+
+# Visualizacion
+
+ggplot(Req) +
+ aes(x = year) +
+ geom_density(adjust = 0.5, fill = "#1bb1cf") +
+ labs(x = "Años", y = "Cantidad de requerimientos", title = "Ocurrencia de Requeriientos entre 1972 y 2020") +
+ ggthemes::theme_base()
+```
+
+
+
 
