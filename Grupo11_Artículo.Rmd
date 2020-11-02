@@ -28,7 +28,7 @@ Al respecto, estudios han afirmado que el TC ha sido utilizado por partidos pol�
 Pese a estos avances, los estudios no especifican cuál es el tipo de derecha que ha presentado requerimientos, en el entendido que ni siquiera la UDI es un grupo homogéneo, así como tampoco un partido político agota la categoría “derecha”. Asimismo, no se ha logrado identificar una tipología de leyes a las que estos grupos se esmeran en vetar, dando simplemente el rótulo de “derechos sociales” [@bassa_estado_2008] a lo cual la derecha se opone. En suma, si bien existe una idea ampliamente difundida de que el TC es un mecanismo de veto y neutralización favorable a grupos políticos herederos del régimen cívico-militar, no existe una caracterización de estos grupos, ni de las redes sociales mediante las cuales articulan los requerimientos de inconstitucionalidad. En un nivel operativo, podríamos decir que los estudios no se han detenido a analizar las redes de relaciones socio-políticas que permiten la instrumentalización del TC, así como tampoco de la materia sustantiva de las leyes que intenta bloquear la red.
 
 De esta manera, el presente estudio busca dilucidar el entramado social de los arreglos de poder que, en la esfera de la política, recurren al TC con objeto de neutralizar y/o vetar la deliberación socio-política mayoritaria. En concreto se busca responder la pregunta: 
-** *¿Cuáles son las redes políticas que se articulan en el proceso de revisión de proyectos de ley, leyes o tratados que han sido declarados inconstitucionales por el Tribunal Constitucional?* **
+*¿Cuáles son las redes políticas que se articulan en el proceso de revisión de proyectos de ley, leyes o tratados que han sido declarados inconstitucionales por el Tribunal Constitucional?*
 
 
 ### **Objetivos e hipótesis**
@@ -41,5 +41,13 @@ De esta manera, el presente estudio busca dilucidar el entramado social de los a
  3.	Identificar los contenidos puestos en requerimiento.
 
 - Hipótesis: 
+
+# **Método**
+
+Para lograr el objetivo planteado se realiza un web scraping a la página web oficial del Tribunal Constitucional Chileno [@tc_sentencias_2020]. A partir de los datos recabados se tabula información sobre sentencias del tribunal con especial énfasis en los requerimientos de inconstitucionalidad. En ello se busca identificar: 1) impulsores del requerimiento y sus afiliaciones políticas y 2) la materia de la ley que es sometida a requerimiento de inconstitucionalidad. Luego, se realiza un análisis de redes socio-políticas que subyacen a la presentación de requerimientos. Finalmente, se realiza un análisis de lenguaje natural para identificar los contenidos ideológicos de la ley sometida a requerimiento.
+
+# **Resultados**
+
+# **Discusión y conclusiones**
 
 # **Referencias**
