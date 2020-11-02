@@ -225,17 +225,34 @@ nombres<- c("Carmen Gloria Aravena Acuña, Jacqueline Van Rysselberghe Herrera, 
 Req$nombres <- nombres
 ```
 
-```{r Descriptivos}
-# Ver ocurrencia de requerimientos por anos
-frq(Req$year)
 
-# Visualizacion
+```{r Crear bases nombres}
+# Crear base de nombres
+# Por ahora, solo se hara el ejercicio de manera manual, por lo que se trabajara con un par de sentencias/
+Req_nom <- Req[c(1,9), c(2,5,6)] # Subsetting casos 1 (2020) y caso 9 (2014). Se escogen a modo de tener un rango de tiempo considerable entremedio.
 
-ggplot(Req) +
- aes(x = year) +
- geom_density(adjust = 0.5, fill = "#1bb1cf") +
- labs(x = "Años", y = "Cantidad de requerimientos", title = "Ocurrencia de Requeriientos entre 1972 y 2020") +
- ggthemes::theme_base()
+nombres_2020 <- strsplit(Req_nom$nombres, split= ",")[[1]] # Separar por comas los nombres de los requierentes: caso 2020
+nombres_2014 <- strsplit(Req_nom$nombres, split= ",")[[2]] # Idem: caso 2014
+Req_per_2014 <- data.frame(requerientes_2014 = nombres_2014) # Nuevo dataframe
+Req_per_2020 <- data.frame(requerientes_2020 = nombres_2020) # Idem
+
+# Arreglar rows que no se separaron por tener otro caracter ("y" y ";")
+
+## 2020
+Req_per_2020$requerientes_2020[11] <- "Kenneth Pugh Olavarría"
+Req_per_2020[nrow(Req_per_2020)+1,] <- "David Sandoval Plaza"
+
+# Crear variable partido (busqueda en internet, pensar como automatizar la creacion de estas bases)
+Req_per_2020$partido <- c("Independiente", "UDI", "UDI", "RN", "RN", "UDI", "RN", "UDI", "RN", "UDI", "Independiente", "UDI")
+
+## 2014
+Req_per_2014$requerientes_2014[23] <- "Renzo  Trisotti Martínez"
+Req_per_2014[nrow(Req_per_2014)+1,] <- "Marisol Turres Figueroa"
+Req_per_2014$requerientes_2014[29] <- "José Manuel Edwards Silva"
+Req_per_2014[nrow(Req_per_2014)+1,] <- "Felipe Kast Sommerhoff"
+
+# Crear variable partido
+Req_per_2014$partido <- c("UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "RN", "UDI", "Evopolis")
 ```
 
 
