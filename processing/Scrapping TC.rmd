@@ -252,7 +252,7 @@ Req_per_2014$requerientes_2014[29] <- "José Manuel Edwards Silva"
 Req_per_2014[nrow(Req_per_2014)+1,] <- "Felipe Kast Sommerhoff"
 
 # Crear variable partido
-Req_per_2014$partido <- c("UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "RN", "UDI", "Evopolis")
+Req_per_2014$partido <- c("UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "RN", "UDI", "Evopoli")
 ```
 
 ```{r Guardar bases de datos}
