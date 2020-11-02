@@ -1,0 +1,57 @@
+---
+title: "Descriptive TC"
+author: "Jan Dimter Stransky, Cristobal Ortiz y Martín Venegas"
+date: "1/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Descriptive TC
+En el presente documento se efetuaran un par de analisis descriptivos para el Demo 1 del ramo Ciencias Sociales Computacionales.
+
+```{r Cargar paquetes y bases}
+## Paquetes
+pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2)
+
+## Bases
+load("../input/data/ScrapReq1972_2020.RData")
+load("../input/data/Req_per_2014.RData")
+load( "../input/data/Req_per_2020.RData")
+```
+
+```{r Graficos y tablas}
+
+# Tabla con los años
+frq(Req$year)
+
+# Tabla partidos
+frq(Req_per_2014$partido)
+frq(Req_per_2020$partido)
+
+ggplot(Req) +
+ aes(x = year) +
+ geom_density(adjust = 0.5, fill = "#737373") +
+ labs(x = "Años", y = "Cantidad de Requerimientos presentados", title = "Distribución de Requerimientos a Proyectos de Ley", subtitle = "1997-2020") +
+ ggthemes::theme_base()
+
+ggplot(Req_per_2020) +
+ aes(x = partido) +
+ geom_bar(fill = "#08306b") +
+ labs(x = "Afiliación partidaria", y = "Cantidad de diputados/senadores afiliados", title = "Afiliación partidaria de requerentes sentencia 2020") +
+ coord_flip() +
+ ggthemes::theme_base()
+
+ggplot(Req_per_2014) +
+ aes(x = partido) +
+ geom_bar(fill = "#08306b") +
+ labs(x = "Afiliación partidaria", y = "Cantidad de diputados/senadores afiliados", title = "Afiliación partidaria de requerentes sentencia 2014") +
+ coord_flip() +
+ ggthemes::theme_base()
+
+
+
+```
+

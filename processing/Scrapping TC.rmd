@@ -13,7 +13,7 @@ Descripción: Este RMarkdown realizará la técnica de web-scrapping a la págin
 # Configuración del .rmd y carga de paquetes.
 knitr::opts_chunk$set(echo = FALSE)
 ## Paquetes
-pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate,sjmisc)
+pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2)
 ```
 
 ## Operación
@@ -254,6 +254,14 @@ Req_per_2014[nrow(Req_per_2014)+1,] <- "Felipe Kast Sommerhoff"
 # Crear variable partido
 Req_per_2014$partido <- c("UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "UDI", "RN", "UDI", "Evopolis")
 ```
+
+```{r Guardar bases de datos}
+
+save(Req, file = "../input/data/ScrapReq1972_2020.RData")
+save(Req_per_2014, file = "../input/data/Req_per_2014.RData")
+save(Req_per_2020, file = "../input/data/Req_per_2020.RData")
+```
+
 
 
 
