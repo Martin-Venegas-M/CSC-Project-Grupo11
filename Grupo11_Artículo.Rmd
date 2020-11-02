@@ -15,6 +15,16 @@ bibliography: input/bib/CSC-Project-Grupo11.bib
 csl: input/bib/apa.csl
 link-citations: yes
 ---
+
+```{r Cargar paquetes y bases, message=FALSE, warning=FALSE, include=FALSE}
+## Paquetes
+pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2)
+
+## Bases
+load("input/data/ScrapReq1972_2020.RData")
+load("input/data/Req_per_2014.RData")
+load( "input/data/Req_per_2020.RData")
+```
 # **Introducción**
 
 En la investigación de las problemáticas socio-políticas contemporáneas, uno de los temas de investigación recurrentes ha sido la conflictiva relación entre política y sociedad. Y no ha podido ser de otra manera, pues las llamadas crisis de legitimación [@habermas_legitimation_1975] o crisis de la democracia liberal [@castells_ruptura_2017] han puesto en tela de juicio las formas en que se desarrolla dicha relación a lo largo y ancho del mundo occidental.  Una de las reflexiones recurrentes en torno a las causas de este tipo de conflictos –que producen y a la vez se ven potenciados por la deslegitimación— se orienta a la instrumentalización de la institucionalidad democrática por ciertos grupos sociales para sus propios fines y que, al hacerlo, contribuyen a la deslegitimación de la política y, por tanto, de la democracia representativa. En ello juega un rol fundamental y específico la instrumentalización de la normativa jurídica institucional o simplemente la constitución política de un país, la cual tiene como mayor virtud –o en el caso de su instrumentalización, vicio— el subsumir cualquier cambio político y social a su marco normativo vigente. 
@@ -37,17 +47,58 @@ De esta manera, el presente estudio busca dilucidar el entramado social de los a
 
 -	Objetivos específicos:
  1.	Identificar grupos políticos que presentan proyectos de ley, leyes o tratados con carácter constitucional.
- 2.	Identificar grupos políticos que recurren al Tribunal Constitucional para frenar reformas.
+ 2.	Identificar grupos políticos que presentan requerimientos de por inconstitucionalidad al Tribunal Constitucional.
  3.	Identificar los contenidos puestos en requerimiento.
 
-- Hipótesis: 
+- Hipótesis:
+
+La hipótesis a discutir en este primer avance se enmarca en el segundo objetivo especifico. Considerando los antecedentes planteados, proponemos que los grupos políticos más involucrados en la presentación de requerimientos al Tribunal Constitucional serán aquellos ligados espectro político de Derecha.
 
 # **Método**
 
 Para lograr el objetivo planteado se realiza un web scraping a la página web oficial del Tribunal Constitucional Chileno [@tc_sentencias_2020]. A partir de los datos recabados se tabula información sobre sentencias del tribunal con especial énfasis en los requerimientos de inconstitucionalidad. En ello se busca identificar: 1) impulsores del requerimiento y sus afiliaciones políticas y 2) la materia de la ley que es sometida a requerimiento de inconstitucionalidad. Luego, se realiza un análisis de redes socio-políticas que subyacen a la presentación de requerimientos. Finalmente, se realiza un análisis de lenguaje natural para identificar los contenidos ideológicos de la ley sometida a requerimiento.
 
 # **Resultados**
+## Figura 1
+```{r Grafico 1, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(Req) +
+ aes(x = year) +
+ geom_density(adjust = 0.5, fill = "#737373") +
+ labs(x = "Años", y = "Cantidad de Requerimientos presentados", title = "Distribución de Requerimientos a TC", subtitle = "1997-2020") +
+ ggthemes::theme_base()
+```
+
+El primer gráfico muestra la distribución que han tenido los requerimientos por inconstitucionalidad desde los 70 hasta la fecha. La información devela una importante alza desde 1990, concordante con el retorno de la democracia. No obstante, más interesante aun resultan los dos puntos algidos sucedidos entre los 90 y los 2000, y entre el 2010 y el 2020. En suma, si bien con algunas irregularidades, hay evidencia para sostener que la presentación de requerimientos por institucionalidad ha ido en aumento.
+
+## Figura 2
+```{r Grafico 2, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(Req_per_2020) +
+ aes(x = partido) +
+ geom_bar(fill = "#08306b") +
+ labs(x = "Afiliación partidaria", y = "Cantidad de requerentes afiliados", title = "Afiliación partidaria requerentes", subtitle = "2020") +
+ coord_flip() +
+ ggthemes::theme_base()
+```
+Como es posible observar en la Figura 2, la inmensa mayoría de los senadores y diputados requerentes a la sentencia ocurrida el año 2020 se enmarcan en los partidos políticos de la Derecha chilena: Renovación Nacional y Unidad Democrata Independiente. Por lo que, si bien a un nivel descriptivo aun, los datos van dando soporte a la hipotesis descriptiva presentada en el presente escrito: que los requerimientos son ejercidos desde los grupos políticos más ligados al espectro de Derecha.
+
+## Figura 3
+```{r Grafico 3, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(Req_per_2014) +
+ aes(x = partido) +
+ geom_bar(fill = "#08306b") +
+ labs(x = "Afiliación partidaria", y = "Cantidad de requerentes afiliados", title = "Afiliación partidaria de requerentes", subtitle = "2014") +
+ coord_flip() +
+ ggthemes::theme_base()
+
+```
+Resulta claro que la totalidad de requirientes ante el TC pertenece a la derecha política chilena, pero sorprende la alta concentración que obtenida a partir de aquellos militantes de la UDI. Esto se condice con la solidez en rechazar la posibilidad de una nueva constitución por parte del partido gremialista, en comparación con la división presentada en otros partidos de derecha
 
 # **Discusión y conclusiones**
+
+En este escrito hemos problematizado la idea de la instrumentalización del Tribunal Constitucional para con los intereses de determinados grupos políticos. Bajo esa idea, nos hemos propuesto la identificación de las redes políticas dentro de los procesos de revisión de los requerimientos presentados al Tribunal Constitucional, para lo cual, este avance aporta en identificación a un nivel descriptivo de aquellos grupos políticos más involucrados en la presentación de requerimientos.
+
+Hemos podido observar que casi en su totalidad, al menos de los dos casos presentados (sentencias del 2014 y el 2020), los requerentes son senadores o diputados ligados al espectro político de derecha. Más aun, aquellos requerentes nombrados independientes, mantienen un historial político asociado a la Derecha, considerando que Carmen Gloria Aravena fue militante Evopoli entre 2016 y 2019 y Kenneth Pugh fue a senador en lista de Chilevamos, independiente apoyado por Renovación Nacional.
+
+Si bien este avance aun en bastante incipiente, en terminos de resultados y sofisticación del metodo, proponemos que la exploración de estas tematicas, sumamente contingentes hoy en dia, son de especial relevancia para las ciencias sociales y pueden abrir nuevas lineas de investigación.
 
 # **Referencias**
