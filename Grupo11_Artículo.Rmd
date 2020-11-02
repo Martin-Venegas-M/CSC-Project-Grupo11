@@ -79,6 +79,7 @@ ggplot(Req_per_2020) +
  coord_flip() +
  ggthemes::theme_base()
 ```
+
 Como es posible observar en la Figura 2, la inmensa mayoría de los senadores y diputados requerentes a la sentencia ocurrida el año 2020 se enmarcan en los partidos políticos de la Derecha chilena: Renovación Nacional y Unidad Democrata Independiente. Por lo que, si bien a un nivel descriptivo aun, los datos van dando soporte a la hipotesis descriptiva presentada en el presente escrito: que los requerimientos son ejercidos desde los grupos políticos más ligados al espectro de Derecha.
 
 ## Figura 3
@@ -91,6 +92,7 @@ ggplot(Req_per_2014) +
  ggthemes::theme_base()
 
 ```
+
 Resulta claro que la totalidad de requirientes ante el TC pertenece a la derecha política chilena, pero sorprende la alta concentración que obtenida a partir de aquellos militantes de la UDI. Esto se condice con la solidez en rechazar la posibilidad de una nueva constitución por parte del partido gremialista, en comparación con la división presentada en otros partidos de derecha
 
 # **Discusión y conclusiones**
