@@ -23,10 +23,6 @@ Creación de función que realizará el web-scrapping.
 
 # Esta funcion rellena el formulario de Busqueda Avanzada para la pagina del Tribunal Constitucional a partir de dos argumentos: el numero de la materia y una palabra clave. Se elabora para utilizar a futuro.
 
-#Códigos de testeo
-cat<- "4"
-txt <- "Requerimiento"
-
 scrapTC <- function (cat,txt) {
   TC_link <-'https://www.tribunalconstitucional.cl/sentencias/busqueda-avanzada'
   TC_web <- read_html(TC_link)
@@ -98,77 +94,98 @@ scrapTC <- function (cat,txt) {
 
 ```
 
+Puesta en práctica de la función
 ```{r Scrappear Requerimientos}
 # Aplicar la funcion elaborada para categoria "Constitucionalidad de Proyectos de Ley (Art 93 N3)
 # Palabra clave: Requerimiento
 Req <- scrapTC("4", "Requerimiento")
+#Se filtrará desde el periodo de la vuelta a la democracia
+Req<- subset(Req, year >=1990)
 ```
 
-```{r Crear funciones y lista de parrafos}
-# Extraer parrafo en donde se menciona a los senadores o diputados que presentan el requerimiento.
 
-# Funcion para crear bases con los parrafos de las Sentencias
-createS <- function(base, linkrow) {
-  base <- read_html(Req$sentencia_html[linkrow]) %>% # Leer link
-  html_nodes("p") %>% # Etiquetas
-  html_text()
-  return(base)
-}
+#### Funcion para crear bases con los parrafos de las Sentencias
+```{r Funcion para crear bases con los parrafos de las Sentencias}
+ExtractSentencias <- function(input) {
+  index_links <- 1:length(input) #Numero de elementos de la lista.
+  parrafos <- list() # Output vacio
+  for( i in seq_along(index_links)){
+    parrafos[[i]] <- read_html(input[i]) %>% # Leer link
+                     html_nodes("p") %>% # Etiquetas
+                     html_text()
+  }
+  parrafos <- lapply(parrafos, str_replace_all,"\r\n", " ")
+  return(parrafos)
+  }
+```
 
-# Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
+Habiendo creado la función, procedemos a extraer las sentencias:
+```{r Extracción del texto de las sentencias_html para la base de datos}
+Sentencias<-ExtractSentencias(Req$sentencia_html)
+```
 
-# Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
+#### Parrafo con parlamentarios creadores
+Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
+```{r}
+#Pendiente
+```
 
+#### Extracción de requirentes (FINDREC)
+Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
+```{r}
 findreq <- function(base) {
   return(grep("miembros", base))
-}
+                          }
+```
 
-
-# Funcion para buscar boletin
+#### Funcion para buscar boletin en la sentencia (FINDBOL)
+```{r}
 findbol <- function(base) {
   return(grep("Boletín", base))
-}
+                          }
+```
 
 # For para crear lista con los parrafos extraidos
-parrafos <- list() # Output vacio
-Ss <- 1:90 #Numero de elementos de la lista.
-
-for( i in seq_along(Ss)){
-    parrafos[[i]] <- createS("S", i)}
+```{r}
+# Buscar los parrafos con la palabra "miembros" en ella.
+lapply(Sentencias, findreq)
 
 # Buscar los parrafos con la palabra "miembros" en ella.
-lapply(parrafos, findreq)
+lapply(Sentencias, findbol)
 
-# Buscar los parrafos con la palabra "miembros" en ella.
-lapply(parrafos, findbol)
+Sentencias[[1]]
 ```
 
 ```{r Comprobar parrafos}
 # Comprobar que salgan los nombres en los parrafos.
 
-parrafos[[1]][15]
-parrafos[[2]][8]
-parrafos[[3]][7]
-parrafos[[4]][8]
-parrafos[[5]][7]
-parrafos[[6]][3]
-parrafos[[7]][56]
-parrafos[[8]][4]
-parrafos[[9]][6]
-parrafos[[10]][7]
+Sentencias[[1]][15]
+Sentencias[[2]][8]
+Sentencias[[3]][7]
+Sentencias[[4]][8]
+Sentencias[[5]][7]
+Sentencias[[6]][3]
+Sentencias[[7]][56]
+Sentencias[[8]][4]
+Sentencias[[9]][6]
+Sentencias[[10]][7]
 
-parrafos[[11]][6]
-parrafos[[12]][4]
-parrafos[[13]][7]
-parrafos[[14]][3]
-parrafos[[15]][25]
-#parrafos[[16]][] Revisar
-parrafos[[17]][3]
-parrafos[[18]][95]
-#parrafos[[19]][] Revisar
-parrafos[[20]][9]
+Sentencias[[11]][6]
+Sentencias[[12]][4]
+Sentencias[[13]][7]
+Sentencias[[14]][3]
+Sentencias[[15]][25]
+#Sentencias[[16]][] Revisar
+Sentencias[[17]][3]
+Sentencias[[18]][95]
+#Sentencias[[19]][] Revisar
+Sentencias[[20]][9]
+
+```
 
 # Crear variable de nombres a partir de lo revisado de forma manual (buscar automatizar)
+
+```{r}
 nombres<- c("Carmen Gloria Aravena Acuña, Jacqueline Van Rysselberghe Herrera, Ena Von Baer Jahn, Juan Castro Prieto, Francisco Chahuán Chahuán, Juan Antonio Coloma Correa, José García Ruminot, Alejandro García Huidobro Sanfuentes, Rodrigo Galilea Vial, Víctor Pérez Varela, Kenneth Pugh Olavarría y David Sandoval Plaza", #1
           
           "Javier Macaya Danús, Leopoldo Pérez Lahsen, Jorge Alessandri Vergara, Pedro Pablo Álvarez-Salamanca Ramírez, Sandra Amar Mancilla, Nino Baltolu Rasera, Ramón Barros Montero, Bernardo Berger Fett, Sergio Bobaclilla Muñoz, José Miguel Castro Bascuñán,Sofia Cid Versalovic, Juan Antonio Coloma Álamos, Álvaro CarterFernández, Catalina Del Real Mihovilovic, Mario Desbordes Jiménez, Eduardo Durán Salinas, Francisco Eguiguren Correa, Camila Flores Oporto, Juan Fuenzalida Cobo, Sergio Gahona Salazar, Javier Hernández Hernández, María José Hoffmann Opazo, Harry Jürgensen Rundshagen, Issa Kort Garriga, Carlos Kuschel Silva, Joaquín Lavín León, Andrés Longton Herrera, Patricio Melero Abaroa, Miguel Mellado Suazo, Celso Morales Muñoz, Cristhian Moreira Barros, Francesca Muñoz González, Nicolás Noman Garrido, Iván Norambuena Farías, Paulina Núñez Urrutia, Erika Olivera De la Fuente, Ximena Ossandon Irarrázabal, Luis Pardo Sainz, Diego Paulsen Kehr, Pablo Prieto Lorca, Guillermo Ramírez Diez, Jorge Rathgeb Schifferli, Rolando Rentería Moller, Hugo Rey Martínez, Leonidas Romero Sáez, Gustavo Sanhueza Dueñas, Alejandro Santana Tirachini, Frank Sauerbaum Muñoz, Diego Schalper Sepúlveda, Sebastián Torrealba Alvarado, Renzo Trisotti Martínez, Virginia Troncoso Hellman, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Gastón Von Mühlenbrock Zamora", #2
@@ -187,7 +204,7 @@ nombres<- c("Carmen Gloria Aravena Acuña, Jacqueline Van Rysselberghe Herrera, 
           "Pedro Pablo Álvarez-Salamanca Ramírez,  Ramón Barros Montero, Jaime Bellolio Avaria, Juan Antonio Coloma Álamos, Felipe De Mussy Hiriart, Sergio Gahona Salazar, Romilio Gutiérrez Pino, Gustavo Hasbún Selume, Javier Hernández Hernández, María José Hoffmann Opazo, José Antonio Kast Rist, Issa Kort Garriga, Joaquín Lavín León, Javier Macaya Danús, Patricio Melero Abarca, Andrea Molina Oliva, Celso Morales Muñoz, Claudia Nogueira Fernández, Iván Norambuena Farías, David Sandoval Plaza, Ernesto Silva Méndez, Arturo Squella Ovalle, Renzo  Trisotti Martínez; Marisol Turres Figueroa, Jorge Ulloa Aguillón, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Felipe Ward Edwards,  José Manuel Edwards Silva y Felipe Kast Sommerhoff", #9
           
           "No menciona nombres", #10
-          rep(NA, 80))
+          rep(NA, 66))
 
 # Agregar variable nombres a la base
 Req$nombres <- nombres
@@ -230,6 +247,16 @@ save(Req_per_2014, file = "../input/data/Req_per_2014.RData")
 save(Req_per_2020, file = "../input/data/Req_per_2020.RData")
 ```
 
+
+# Área testeo (todo lo superior está funcionado 100%)
+```{r}
+prueba <- list()
+prueba
+Sent_unlist <- unlist(Sentencias)
+ prueba<-str_extract(Sentencias, "(?i)(?<=2020 N\\D)\\d+")
+ class(Sentencias[[1]][2])
+ all.equal(Sent_unlist,Sentencias)
+```
 
 
 
