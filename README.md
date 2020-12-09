@@ -34,28 +34,20 @@ Cómo funciona el proceso, especialmente desde el análisis de redes. Relación 
 
 ## Objetivos
 
-Explorar las redes políticas dentro del proceso de revisión de proyectos de ley, leyes o tratados desde el Tribunal Constitucional
+Objetivo general: Identificar las redes políticas dentro del proceso de revisión de proyectos de ley, leyes o tratados que han sido declarados inconstitucionales por el Tribunal Constitucional.
 
-1. Identificar grupos políticos que presentar proyectos de ley, leyes o tratados con carácter constitucional 
-2. Identificar grupos políticos que recurren al Tribunal Constitucional para frenar reformas
-3. Identificar los contenidos puestos en requerimiento
+Objetivos específicos:
+
+Identificar grupos políticos que presentan proyectos de ley, leyes o tratados con carácter constitucional.
+Identificar grupos políticos que presentan requerimientos de por inconstitucionalidad al Tribunal Constitucional.
+Identificar los contenidos puestos en requerimiento.  
+
+Hipótesis:
+La hipótesis a discutir en este primer avance se enmarca en el segundo objetivo especifico. Considerando los antecedentes planteados, proponemos que los grupos políticos más involucrados en la presentación de requerimientos al Tribunal Constitucional serán aquellos ligados espectro político de Derecha.
 
 ## Análisis
 ### Momentos
 1. Presentación de proyectos
 2. Discusión de sentencias
-
-## Tareas por realizar:
-### Teórico
-- Problematizar y redactar (Cristóbal)
-
-### Práctico
-#### General
-Hacer el mismo procedimiento presentado anteriormente con todas las páginas de la búsqueda
-
-#### Específicamente: 
-- Buscar una técnica para hacer lo anterior automáticamente (Jan)
-- En HTML filtrar por párrafo **Visto** (Martín)
-- Buscar quienes presentan los proyectos (Revisar API Congreso) (Martín)
 
 

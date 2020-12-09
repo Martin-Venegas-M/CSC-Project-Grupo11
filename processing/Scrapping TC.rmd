@@ -17,61 +17,9 @@ pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2)
 ```
 
 ## Operación
-A continuación se desarrolla el web scrapping:
-```{r Scrapping Manual, echo=True}
-# Cargas
-txt<-"Requerimiento"
-cat<-"4"
-#Carga de la web
-TC_link <-'https://www.tribunalconstitucional.cl/sentencias/busqueda-avanzada'
-#Lectura del HTML
-TC_web <- read_html(TC_link)
-#Carga del formulario y relleno de búsqueda
-form_base <- html_form(TC_web)[[3]]
-form_beta <- set_values(form_base, materia= cat, texto=txt)
-TC_session <- html_session(TC_link)
-TC_conform <- submit_form(session=TC_session, form=form_beta)
-#Lectura del resultado
-TC_resultado_beta <- read_html(TC_conform)
-#Scrapeo número de páginas
-paginas <-TC_resultado_beta %>% html_nodes("center a") %>% html_text()%>% .[-length(.)]
-#Lista con múltiples forms base
-forms_mult_base<- list(form_base)[rep(1,length(paginas))]
-  
-#Creación lista con n formularios rellenados con el número de páginas
-forms_mult_rell <- list()  # 1. output
-
-# Resultados scrappeados por pagina
-for( i in seq_along(paginas)){
-forms_mult_rell[[i]] <- set_values(form_base, materia= cat, texto=txt, pagina =i)}
-submit_forms<-lapply(forms_mult_rell,submit_form,session=TC_session)
-read_results<-lapply(submit_forms,read_html)
-  
-# Crear variable con los links
-links_p1 <- html_nodes(read_results[[1]], "div tr td a") %>% html_attr("href")
-links_p1 <- links_p1[c(4,8,16,21,27,32,36,41,46,50)] # No sigue la misma estructura
-links_p2 <- html_nodes(read_results[[2]], "div tr td a") %>% html_attr("href")
-links_p2 <- links_p2[c(4,8,12,16,20,24,28,32,36,40)]
-links_p3 <- html_nodes(read_results[[3]], "div tr td a") %>% html_attr("href")
-links_p3 <- links_p3[c(4,8,12,16,20,24,28,32,36,40)]
-links_p4 <- html_nodes(read_results[[4]], "div tr td a") %>% html_attr("href")
-links_p4 <- links_p4[c(4,8,12,16,20,24,28,32,36,40)]
-links_p5 <- html_nodes(read_results[[5]], "div tr td a") %>% html_attr("href")
-links_p5 <- links_p5[c(4,8,12,16,20,24,28,32,36,40)]
-links_p6 <- html_nodes(read_results[[6]], "div tr td a") %>% html_attr("href")
-links_p6 <- links_p6[c(4,8,12,16,20,24,28,32,36,40)]
-links_p7 <- html_nodes(read_results[[7]], "div tr td a") %>% html_attr("href")
-links_p7 <- links_p7[c(4,8,12,16,20,24,28,32,36,40)]
-links_p8 <- html_nodes(read_results[[8]], "div tr td a") %>% html_attr("href")
-links_p8 <- links_p8[c(4,8,12,16,20,24,28,32,36,40)]
-links_p9 <- html_nodes(read_results[[9]], "div tr td a") %>% html_attr("href")
-links_p9 <- links_p9[c(4,8,12,16,20,24,28,32,36,40)]
-   
-links <- c(links_p1, links_p2, links_p3, links_p4, links_p5, links_p6, links_p7, links_p8, links_p9)
-```
-
+Creación de función que realizará el web-scrapping.
 ```{r Scrapping Create Function, echo=True}
-#Función superior (devuelve dato en formato tabla)
+#Función devuelve dato en formato data.frame
 
 # Esta funcion rellena el formulario de Busqueda Avanzada para la pagina del Tribunal Constitucional a partir de dos argumentos: el numero de la materia y una palabra clave. Se elabora para utilizar a futuro.
 
@@ -95,112 +43,155 @@ scrapTC <- function (cat,txt) {
     forms_mult_rell[[i]] <- set_values(form_base, materia= cat, texto=txt, pagina =i)}
   submit_forms<-lapply(forms_mult_rell,submit_form,session=TC_session)
   read_results<-lapply(submit_forms,read_html)
-  extracc_tablas2<- lapply(read_results,html_nodes,css="form table:last-child table")
-  extracc_tablas_final<- lapply(extracc_tablas2,html_table,fill=TRUE,header=TRUE)
-  prueba1 <-unlist(extracc_tablas_final,recursive = FALSE)
-  #largo_lista <- length(prueba1)
-  tabla_síntesis<-Reduce(bind_rows, prueba1)
+  
+  extracc_tablas2<- lapply(read_results, html_nodes, css="form table:last-child table")
+  extracc_tablas_completas<- lapply(extracc_tablas2,html_table,fill=TRUE,header=TRUE)
+  prueba1 <-unlist(extracc_tablas_completas,recursive = FALSE)
+  extracc_tablas_filtradas<- lapply(prueba1, base::subset, select = -c(3, 5 ))
+  
+  expediente <- lapply(read_results, html_nodes,css="form table:last-child table tr td:nth-child(3) a")
+  expediente2<- lapply(expediente, html_attr,name="href") %>% unlist
+  expediente3<- lapply(expediente2, function(x) if(str_contains(x, "tribunalconstitucional.cl", ignore.case = TRUE)){x
+    }else{paste0("https://www.tribunalconstitucional.cl",x)
+    }) %>%unlist()
+  
+  sente_html <- lapply(read_results, html_nodes,css="form table:last-child table tr td:nth-child(5) a")
+  sente_html2<- lapply(sente_html, html_attr,name="href") %>% unlist
+  sente_html3<- lapply(sente_html2, function(x) if(str_contains(x, "tribunalconstitucional.cl", ignore.case = TRUE)){x
+    }else{paste0("https://www.tribunalconstitucional.cl",x)
+    }) %>%unlist()
+
+  #Creación de la tabla
+  tabla_síntesis<-Reduce(bind_rows, extracc_tablas_filtradas)
+  #Creación variable expediente en la tabla
+  tabla_síntesis$expediente <-expediente3
+  #Creación variable sentencia_html en la tabla
+  tabla_síntesis$sentencia_html <-sente_html3
+  #Transformación Fecha a lubridate
+  tabla_síntesis$Fecha <- lubridate::dmy(tabla_síntesis$Fecha)
+  #Creación variable year en la tabla
+  tabla_síntesis$year<- lubridate::year(tabla_síntesis$Fecha)
+  
+  #Idebtificación Boletín a partir de Caratula
+  tabla_síntesis$Boletin_carat <- tabla_síntesis$Caratulado
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "[[:punct:]]", "")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "°", "")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "º", "")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "boletÃ­n", "Boletín")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "BoletÃ­n", "Boletín")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "Boletin", "Boletín")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "NÂ", "N")
+  #tabla_síntesis$Boletin_carat[1]
+  #tabla_síntesis$Caratulado[1]
+  tabla_síntesis$Boletin_carat_test<-str_extract(tabla_síntesis$Boletin_carat, "(?i)(?<=boletín N\\D)\\d+")
+  
+  
+  #Añadir guión en el penúltimo espacio del número
+  tabla_síntesis$Boletin_carat_test<- ifelse (is.na(tabla_síntesis$Boletin_carat_test),NA,paste0(
+            substr(tabla_síntesis$Boletin_carat_test, 1, (nchar(tabla_síntesis$Boletin_carat_test)-2)),
+            "-",
+            substr(tabla_síntesis$Boletin_carat_test, (nchar(tabla_síntesis$Boletin_carat_test)-1), nchar(tabla_síntesis$Boletin_carat_test))))
+          
+  
   return(tabla_síntesis)
 }
-#Ejemplo, buscaremos sentencias relativas a
-#Materia: Control de constitucionalidad de leyes y tratados (Art.19 nº1) ("2")
-#Palabra clave: "sexual"
-Ejemplo <-scrapTC("2","sexual")
-Ejemplo
+
 ```
 
+Puesta en práctica de la función
 ```{r Scrappear Requerimientos}
 # Aplicar la funcion elaborada para categoria "Constitucionalidad de Proyectos de Ley (Art 93 N3)
 # Palabra clave: Requerimiento
 Req <- scrapTC("4", "Requerimiento")
+#Se filtrará desde el periodo de la vuelta a la democracia
+Req<- subset(Req, year >=1990)
 ```
 
-```{r Modificar dataset}
-# Modificar dataset
-Req <- Req[,-c(3,5)] # Eliminar columnas innecesarias
-Req$links <- links # Agregar columna de links creada semi-manualmente
-Req$links <- paste("https://www.tribunalconstitucional.cl", Req$links, sep = "") # Agregar pagina para leer links
 
-# No se me ocurre una forma para que la funcion anterior no aplique a las row 6, 7 y 8, asique vuelvo a cambiar de nombre
-
-Req$links[6] <- "http://www.tribunalconstitucional.cl/wp-content/uploads/fallo_rol_2935_glosa.html"
-Req$links[7] <- "http://www.tribunalconstitucional.cl/wp-content/uploads/Rol2787.html"
-Req$links[8] <- "http://www.tribunalconstitucional.cl/wp-content/uploads/SRol2777-15-CPT.html"
-
-# Transformar date a formato fecha
-
-Req$Fecha <- lubridate::dmy(Req$Fecha)
-
-# Sacar solo el year
-Req$year<- lubridate::year(Req$Fecha)
-
+#### Funcion para crear bases con los parrafos de las Sentencias
+```{r Funcion para crear bases con los parrafos de las Sentencias}
+ExtractSentencias <- function(input) {
+  index_links <- 1:length(input) #Numero de elementos de la lista.
+  parrafos <- list() # Output vacio
+  for( i in seq_along(index_links)){
+    parrafos[[i]] <- read_html(input[i]) %>% # Leer link
+                     html_nodes("p") %>% # Etiquetas
+                     html_text()
+  }
+  parrafos <- lapply(parrafos, str_replace_all,"\r\n", " ")
+  parrafos <- lapply(parrafos, str_replace_all,"\n", " ")
+  parrafos <- lapply(parrafos, str_replace_all,"\t", " ")
+  return(parrafos)
+  }
 ```
 
-```{r Crear funciones y lista de parrafos}
-# Extraer parrafo en donde se menciona a los Senadores que presenan el requerimiento.
+Habiendo creado la función, procedemos a extraer las sentencias:
+```{r Extracción del texto de las sentencias_html para la base de datos}
+Sentencias<-ExtractSentencias(Req$sentencia_html)
+```
 
-# Funcion para crear bases con los parrafos de las Sentencias
-createS <- function(base, linkrow) {
-  base <- read_html(Req$links[linkrow]) %>% # Leer link
-  html_nodes("p") %>% # Etiquetas
-  html_text()
-  return(base)
-}
+#### Parrafo con parlamentarios creadores
+Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
+```{r}
+#Pendiente
+```
 
-# Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
-
-# Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
-
+#### Extracción de requirentes (FINDREC)
+Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
+```{r}
 findreq <- function(base) {
   return(grep("miembros", base))
-}
+                          }
+```
 
-
-# Funcion para buscar boletin
+#### Funcion para buscar boletin en la sentencia (FINDBOL)
+```{r}
 findbol <- function(base) {
   return(grep("Boletín", base))
-}
+                          }
+```
 
 # For para crear lista con los parrafos extraidos
-parrafos <- list() # Output vacio
-Ss <- 1:90 #Numero de elementos de la lista.
-
-for( i in seq_along(Ss)){
-    parrafos[[i]] <- createS("S", i)}
+```{r}
+# Buscar los parrafos con la palabra "miembros" en ella.
+lapply(Sentencias, findreq)
 
 # Buscar los parrafos con la palabra "miembros" en ella.
-lapply(parrafos, findreq)
+lapply(Sentencias, findbol)
 
-# Buscar los parrafos con la palabra "miembros" en ella.
-lapply(parrafos, findbol)
+Sentencias[[1]]
 ```
 
 ```{r Comprobar parrafos}
 # Comprobar que salgan los nombres en los parrafos.
 
-parrafos[[1]][15]
-parrafos[[2]][8]
-parrafos[[3]][7]
-parrafos[[4]][8]
-parrafos[[5]][7]
-parrafos[[6]][3]
-parrafos[[7]][56]
-parrafos[[8]][4]
-parrafos[[9]][6]
-parrafos[[10]][7]
+Sentencias[[1]][15]
+Sentencias[[2]][8]
+Sentencias[[3]][7]
+Sentencias[[4]][8]
+Sentencias[[5]][7]
+Sentencias[[6]][3]
+Sentencias[[7]][56]
+Sentencias[[8]][4]
+Sentencias[[9]][6]
+Sentencias[[10]][7]
 
-parrafos[[11]][6]
-parrafos[[12]][4]
-parrafos[[13]][7]
-parrafos[[14]][3]
-parrafos[[15]][25]
-#parrafos[[16]][] Revisar
-parrafos[[17]][3]
-parrafos[[18]][95]
-#parrafos[[19]][] Revisar
-parrafos[[20]][9]
+Sentencias[[11]][6]
+Sentencias[[12]][4]
+Sentencias[[13]][7]
+Sentencias[[14]][3]
+Sentencias[[15]][25]
+#Sentencias[[16]][] Revisar
+Sentencias[[17]][3]
+Sentencias[[18]][95]
+#Sentencias[[19]][] Revisar
+Sentencias[[20]][9]
+
+```
 
 # Crear variable de nombres a partir de lo revisado de forma manual (buscar automatizar)
+
+```{r}
 nombres<- c("Carmen Gloria Aravena Acuña, Jacqueline Van Rysselberghe Herrera, Ena Von Baer Jahn, Juan Castro Prieto, Francisco Chahuán Chahuán, Juan Antonio Coloma Correa, José García Ruminot, Alejandro García Huidobro Sanfuentes, Rodrigo Galilea Vial, Víctor Pérez Varela, Kenneth Pugh Olavarría y David Sandoval Plaza", #1
           
           "Javier Macaya Danús, Leopoldo Pérez Lahsen, Jorge Alessandri Vergara, Pedro Pablo Álvarez-Salamanca Ramírez, Sandra Amar Mancilla, Nino Baltolu Rasera, Ramón Barros Montero, Bernardo Berger Fett, Sergio Bobaclilla Muñoz, José Miguel Castro Bascuñán,Sofia Cid Versalovic, Juan Antonio Coloma Álamos, Álvaro CarterFernández, Catalina Del Real Mihovilovic, Mario Desbordes Jiménez, Eduardo Durán Salinas, Francisco Eguiguren Correa, Camila Flores Oporto, Juan Fuenzalida Cobo, Sergio Gahona Salazar, Javier Hernández Hernández, María José Hoffmann Opazo, Harry Jürgensen Rundshagen, Issa Kort Garriga, Carlos Kuschel Silva, Joaquín Lavín León, Andrés Longton Herrera, Patricio Melero Abaroa, Miguel Mellado Suazo, Celso Morales Muñoz, Cristhian Moreira Barros, Francesca Muñoz González, Nicolás Noman Garrido, Iván Norambuena Farías, Paulina Núñez Urrutia, Erika Olivera De la Fuente, Ximena Ossandon Irarrázabal, Luis Pardo Sainz, Diego Paulsen Kehr, Pablo Prieto Lorca, Guillermo Ramírez Diez, Jorge Rathgeb Schifferli, Rolando Rentería Moller, Hugo Rey Martínez, Leonidas Romero Sáez, Gustavo Sanhueza Dueñas, Alejandro Santana Tirachini, Frank Sauerbaum Muñoz, Diego Schalper Sepúlveda, Sebastián Torrealba Alvarado, Renzo Trisotti Martínez, Virginia Troncoso Hellman, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Gastón Von Mühlenbrock Zamora", #2
@@ -219,7 +210,7 @@ nombres<- c("Carmen Gloria Aravena Acuña, Jacqueline Van Rysselberghe Herrera, 
           "Pedro Pablo Álvarez-Salamanca Ramírez,  Ramón Barros Montero, Jaime Bellolio Avaria, Juan Antonio Coloma Álamos, Felipe De Mussy Hiriart, Sergio Gahona Salazar, Romilio Gutiérrez Pino, Gustavo Hasbún Selume, Javier Hernández Hernández, María José Hoffmann Opazo, José Antonio Kast Rist, Issa Kort Garriga, Joaquín Lavín León, Javier Macaya Danús, Patricio Melero Abarca, Andrea Molina Oliva, Celso Morales Muñoz, Claudia Nogueira Fernández, Iván Norambuena Farías, David Sandoval Plaza, Ernesto Silva Méndez, Arturo Squella Ovalle, Renzo  Trisotti Martínez; Marisol Turres Figueroa, Jorge Ulloa Aguillón, Ignacio Urrutia Bonilla, Osvaldo Urrutia Soto, Enrique Van Rysselberghe Herrera, Felipe Ward Edwards,  José Manuel Edwards Silva y Felipe Kast Sommerhoff", #9
           
           "No menciona nombres", #10
-          rep(NA, 80))
+          rep(NA, 66))
 
 # Agregar variable nombres a la base
 Req$nombres <- nombres
@@ -229,7 +220,7 @@ Req$nombres <- nombres
 ```{r Crear bases nombres}
 # Crear base de nombres
 # Por ahora, solo se hara el ejercicio de manera manual, por lo que se trabajara con un par de sentencias/
-Req_nom <- Req[c(1,9), c(2,5,6)] # Subsetting casos 1 (2020) y caso 9 (2014). Se escogen a modo de tener un rango de tiempo considerable entremedio.
+Req_nom <- Req[c(1,9), c(2,6,9)] # Subsetting casos 1 (2020) y caso 9 (2014). Se escogen a modo de tener un rango de tiempo considerable entremedio.
 
 nombres_2020 <- strsplit(Req_nom$nombres, split= ",")[[1]] # Separar por comas los nombres de los requierentes: caso 2020
 nombres_2014 <- strsplit(Req_nom$nombres, split= ",")[[2]] # Idem: caso 2014
@@ -262,6 +253,16 @@ save(Req_per_2014, file = "../input/data/Req_per_2014.RData")
 save(Req_per_2020, file = "../input/data/Req_per_2020.RData")
 ```
 
+
+# Área testeo (todo lo superior está funcionado 100%)
+```{r}
+prueba <- list()
+prueba
+Sent_unlist <- unlist(Sentencias)
+ prueba<-str_extract(Sentencias, "(?i)(?<=2020 N\\D)\\d+")
+ class(Sentencias[[1]][2])
+ all.equal(Sent_unlist,Sentencias)
+```
 
 
 
