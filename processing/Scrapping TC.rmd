@@ -77,6 +77,10 @@ scrapTC <- function (cat,txt) {
   tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "[[:punct:]]", "")
   tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "°", "")
   tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "º", "")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "boletÃ­n", "Boletín")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "BoletÃ­n", "Boletín")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "Boletin", "Boletín")
+  tabla_síntesis$Boletin_carat<-str_replace_all(tabla_síntesis$Boletin_carat, "NÂ", "N")
   #tabla_síntesis$Boletin_carat[1]
   #tabla_síntesis$Caratulado[1]
   tabla_síntesis$Boletin_carat_test<-str_extract(tabla_síntesis$Boletin_carat, "(?i)(?<=boletín N\\D)\\d+")
@@ -115,6 +119,8 @@ ExtractSentencias <- function(input) {
                      html_text()
   }
   parrafos <- lapply(parrafos, str_replace_all,"\r\n", " ")
+  parrafos <- lapply(parrafos, str_replace_all,"\n", " ")
+  parrafos <- lapply(parrafos, str_replace_all,"\t", " ")
   return(parrafos)
   }
 ```
