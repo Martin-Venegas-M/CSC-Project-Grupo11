@@ -104,7 +104,8 @@ Puesta en práctica de la función
 # Palabra clave: Requerimiento
 Req <- scrapTC("4", "Requerimiento")
 #Se filtrará desde el periodo de la vuelta a la democracia
-Req<- subset(Req, year >=1990)
+Req<- subset(Req, year <=2017)
+Req<- subset(Req, year >=2014)
 ```
 
 
@@ -143,8 +144,6 @@ senadores_2014 <- read_html("senadores_2014_file.html") %>% html_nodes("div.mw-p
 senadores_2014$Senador[21] <- "Manuel Matta Aragay"
 
 #Lista potenciales requirientes
-diputados_2014$Diputado
-senadores_2014$Senador
 lista_congresistas <- c(diputados_2014$Diputado,senadores_2014$Senador)
 ```
 
@@ -152,7 +151,84 @@ lista_congresistas <- c(diputados_2014$Diputado,senadores_2014$Senador)
 #### Parrafo con parlamentarios creadores
 Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
 ```{r}
-#Pendiente
+
+Sentencias_filtradas <- list()
+Sentencias_filtradas[[1]] <- paste0(Sentencias[[1]][7]," ",Sentencias[[1]][9])
+Sentencias_filtradas[[2]] <- "Los requirentes, Andrés Allamand Zavala, Francisco Chahúan Chahúan, Juan Antonio Coloma, Alberto Espina Otero, Jose García Ruminot, Alejandro García-Huidobro Sanfuentes, Hernán Larraín Fernández, Iván Moreira Barros, Manuel José Ossandon Irarrázabal, Víctor Pérez Varela, Baldo Prokurica Prokurica, Jacqueline Van Risselberghe Herrera, y Ena Von Baer Jahn, todos Senadores de la Republica en ejercicio y con domicilio para estos efectos en el Congreso Nacional, Av. Pedro Montt S/N, Ciudad de Valparaíso, al Excelentísimo Tribunal Constitucional decimos:"
+Sentencias_filtradas[[3]] <- paste0(Sentencias[[3]][7]," ",Sentencias[[3]][9])
+Sentencias_filtradas[[4]] <- Sentencias[[4]][c(3)]
+Sentencias_filtradas[[5]] <- "H. Senador Andrés Allamand Zavala, H. Senador Francisco Chahuán Chahuán, H. Senador Juan Antonio Coloma Correa, H. Senador Alberto Espina Otero, H. Senador José García Ruminot, H. Senador Hernán Larraín Fernández, H. Senador Manuel José Ossandón Irarrázabal, H. Senador Jaime Orpis Bouchon, H. Senador Víctor Pérez Varela y H. Senadora Ena von Baer Jahn, todos senadores en ejercicio y con domicilio para estos efectos en el Congreso Nacional, Av. Pedro Montt s/n, ciudad de Valparaíso, al Excelentísimo Tribunal Constitucional decimos:"
+Sentencias_filtradas[[6]] <- "Los requirentes Allamand Zavala, Andrés; Chahuán Chahuán, Francisco: Coloma Correa, Juan Antonio; Espina Otero, Alberto; García Huidobro Sanfuentes, Alejandro; García Ruminot, José; Larraín Fernández, Hernán; Orpis Bouchón, Jaime; Pérez Varela, Víctor; Prokurica Prokurica, Baldo; Van Rysselberghe Herrera, Jacqueline; Von Baer Jahn, Ena, todos Senadores de la República"
+Sentencias_filtradas[[7]] <- Sentencias[[7]][c(6)]
+Sentencias_filtradas[[8]] <- "H. Senador Juan Antonio Coloma Correa, H. Senador José García Ruminot, H. Senador Alejandro García-Huidobro Sanfuentes, H. Senador Hernán Larrain Fernández, H. Senador Carlos Larraín Peña, H. Senador Jovino Novoa Vásquez, H. Senador Jaime Orpis Bouchon, H. Senador Víctor Pérez Varela, H Senador, Baldo Prokurica Prokurica, H. Senador Gonzalo Uriarte Herrera y H. Senadora Ena von Baer Jahn, todos senadores en ejercicio y con domicilio para estos efectos en el Congreso Nacional, Av. Pedro Montt s/n, ciudad de Valparaíso, al Excelentísimo Tribunal Constitucional decimos:"
+
+presencia<- matrix(0, ncol = 1, nrow = 158)
+presencia <- data.frame(presencia)
+presencia[,1] <- lista_congresistas
+
+sent1<-data.frame()
+sent2<-data.frame()
+sent3<-data.frame()
+sent4<-data.frame()
+sent5<-data.frame()
+sent6<-data.frame()
+sent7<-data.frame()
+sent8<-data.frame()
+
+semejanza_txt <- 0.3
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[1]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent1 <- rbind.data.frame(sent1, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[2]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent2 <- rbind.data.frame(sent2, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[3]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent3 <- rbind.data.frame(sent3, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[4]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent4 <- rbind.data.frame(sent4, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[5]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent5 <- rbind.data.frame(sent5, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[6]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent6 <- rbind.data.frame(sent6, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[7]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent7 <- rbind.data.frame(sent7, aux)}
+
+for (requiriente in lista_congresistas){
+  aux <- agrepl(requiriente, Sentencias_filtradas[[8]],
+                ignore.case = FALSE, max.distance = semejanza_txt)
+  sent8 <- rbind.data.frame(sent8, aux)}
+
+presencia <- cbind(presencia,sent1,sent2,sent3,sent4,sent5,sent6,sent7,sent8)
+`colnames<-`(presencia,"V1","V2","V3","V4","V5","V6","V7","V8")
+colnames(presencia) <-c("Congresista","V1","V2","V3","V4","V5","V6","V7","V8")
+
+#Párrafos con mayor cantidad de parlamentarios
+#df <- data.frame()
+#for (requiriente in lista_congresistas){
+  #aux <- grepl(requiriente, Sentencias[[5]])
+  #df <- rbind.data.frame(df, aux)
+  
+#}
+#which.max(as.numeric(colSums(df)))
 ```
 
 #### Extracción de requirentes (FINDREC)
@@ -173,12 +249,16 @@ findbol <- function(base) {
 # For para crear lista con los parrafos extraidos
 ```{r}
 # Buscar los parrafos con la palabra "miembros" en ella.
-lapply(Sentencias, findreq)
+prueba_findreq <-lapply(Sentencias, findreq)
+
+#Ejemplo
+hola <- for (i in 1:length(prueba_findreq)) {
+ print(Sentencias[[i]][prueba_findreq[[i]]]) }
+Sentencias[[1]][prueba_findreq[[1]]]
 
 # Buscar los parrafos con la palabra "miembros" en ella.
 lapply(Sentencias, findbol)
 
-Sentencias[[1]]
 ```
 
 ```{r Comprobar parrafos}
