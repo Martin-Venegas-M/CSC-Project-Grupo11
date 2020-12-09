@@ -142,6 +142,10 @@ diputados_2014 <- read_html("diputados_2014_file.html") %>% html_nodes("div.mw-p
 senadores_2014 <- read_html("senadores_2014_file.html") %>% html_nodes("div.mw-parser-output table:nth-child(6)") %>%html_table() %>% .[[1]]
 senadores_2014$Senador[21] <- "Manuel Matta Aragay"
 
+#Lista potenciales requirientes
+diputados_2014$Diputado
+senadores_2014$Senador
+lista_congresistas <- c(diputados_2014$Diputado,senadores_2014$Senador)
 ```
 
 
