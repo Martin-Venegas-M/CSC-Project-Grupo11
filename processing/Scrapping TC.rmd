@@ -130,6 +130,21 @@ Habiendo creado la función, procedemos a extraer las sentencias:
 Sentencias<-ExtractSentencias(Req$sentencia_html)
 ```
 
+
+#### Scrap congresistas periodo 2014-2018
+```{r}
+#Diputados
+#'https://es.wikipedia.org/w/index.php?title=Cámara_de_Diputadas_y_Diputados_de_Chile&oldid=103566415'
+diputados_2014 <- read_html("diputados_2014_file.html") %>% html_nodes("div.mw-parser-output table.wikitable.sortable.jquery-tablesorter") %>%html_table() %>% .[[1]]
+
+#Senadores
+#"https://es.wikipedia.org/w/index.php?title=Anexo:Senadores_actuales_de_la_República_de_Chile&oldid=104283916"
+senadores_2014 <- read_html("senadores_2014_file.html") %>% html_nodes("div.mw-parser-output table:nth-child(6)") %>%html_table() %>% .[[1]]
+senadores_2014$Senador[21] <- "Manuel Matta Aragay"
+
+```
+
+
 #### Parrafo con parlamentarios creadores
 Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
 ```{r}
