@@ -1,7 +1,7 @@
 ---
 title: "Scrapping TC"
 author: "Jan Dimter Stransky, Cristobal Ortiz y Martín Venegas"
-date: "10/24/2020"
+date: "10/12/2020"
 output: html_document
 ---
 
@@ -103,13 +103,13 @@ Puesta en práctica de la función
 # Aplicar la funcion elaborada para categoria "Constitucionalidad de Proyectos de Ley (Art 93 N3)
 # Palabra clave: Requerimiento
 Req <- scrapTC("4", "Requerimiento")
-#Se filtrará desde el periodo de la vuelta a la democracia
+#Se filtrará por periodo parlamentario
 Req<- subset(Req, year <=2017)
 Req<- subset(Req, year >=2014)
 ```
 
 
-#### Funcion para crear bases con los parrafos de las Sentencias
+## Funcion para crear bases con los parrafos de las Sentencias
 ```{r Funcion para crear bases con los parrafos de las Sentencias}
 ExtractSentencias <- function(input) {
   index_links <- 1:length(input) #Numero de elementos de la lista.
@@ -132,7 +132,7 @@ Sentencias<-ExtractSentencias(Req$sentencia_html)
 ```
 
 
-#### Scrap congresistas periodo 2014-2018
+## Scrap congresistas periodo 2014-2018
 ```{r}
 #Diputados
 #'https://es.wikipedia.org/w/index.php?title=Cámara_de_Diputadas_y_Diputados_de_Chile&oldid=103566415'
@@ -148,7 +148,7 @@ lista_congresistas <- c(diputados_2014$Diputado,senadores_2014$Senador)
 ```
 
 
-#### Parrafo con parlamentarios creadores
+## Parrafo con parlamentarios creadores
 Funcion para buscar el parrafo que incluye a los Senadores y Diputados que presentan el Requerimiento. 
 ```{r}
 
@@ -231,10 +231,11 @@ colnames(presencia) <-c("Congresista","V1","V2","V3","V4","V5","V6","V7","V8")
 ```
 
 
-#### Matrices de adyacencia
+## Matrices de adyacencia
+Elaboración de matrices de adyacencia para la graficación de las redes
 ```{r}
 Caso1 <- as.numeric(presencia$V1) ; names(Caso1) <- presencia$Congresista
-table_Caso1<- Caso1%o%Caso1
+table_Caso1<- Caso1%o%Caso1 #Cada matriz es una sentencia distinta
 
 Caso2 <- as.numeric(presencia$V2) ; names(Caso2) <- presencia$Congresista
 table_Caso2<- Caso2%o%Caso2
@@ -257,9 +258,10 @@ table_Caso7<- Caso7%o%Caso7
 Caso8 <- as.numeric(presencia$V8) ; names(Caso8) <- presencia$Congresista
 table_Caso8<- Caso3%o%Caso8
 
-Matriz_sintesis <- table_Caso1 + table_Caso2 + table_Caso3 + table_Caso4 +table_Caso5+table_Caso6+table_Caso6+table_Caso7+table_Caso8
+Matriz_sintesis <- table_Caso1 + table_Caso2 + table_Caso3 + table_Caso4 +table_Caso5+table_Caso6+table_Caso6+table_Caso7+table_Caso8 # Suma de matrices para contar con magnitudes
 ```
 
+## Elaboración de gráficos de redes
 ```{r}
 #Creación grafo base
 g <- graph.adjacency(Matriz_sintesis, mode = "undirected",weighted = TRUE)
@@ -291,7 +293,7 @@ plot(cluster_infomap(g),g,layout = l,main="Infomap",
      vertex.label.color = "black")
 ```
 
-
+## Descriptivos de grafos
 ```{r}
 #Examinar grafo
 
@@ -362,10 +364,9 @@ plot(induced.subgraph(g, membership(g_CL) == 28), edge.width = E(g)$weight, main
 save(Matriz_sintesis, file = "../output/matrix.RData")
 ```
 
-
-
-## Codigo anterior (se guarda como respaldo())
-#### Extracción de requirentes (FINDREC)
+---
+## Codigo anterior (se guarda como respaldo)
+Extracción de requirentes (FINDREC)
 Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
 ```{r}
 findreq <- function(base) {
