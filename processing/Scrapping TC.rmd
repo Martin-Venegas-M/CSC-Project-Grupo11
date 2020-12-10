@@ -265,7 +265,8 @@ Matriz_sintesis <- table_Caso1 + table_Caso2 + table_Caso3 + table_Caso4 +table_
 g <- graph.adjacency(Matriz_sintesis, mode = "undirected",weighted = TRUE)
 
 #Grafo con algoritmo layout Kamada-Kawaii
-plot(g, vertex.label.family="sans",
+plot(g,
+     vertex.label.family="sans",
      vertex.size = 4,
      vertex.color = "tomato",
      vertex.frame.color = NA,
@@ -298,6 +299,31 @@ g_CL <- cluster_louvain(g)
 g_CL[4]
 g_CL[28]
 #for (i in 1:101) {print(g_CL[i])}
+
+plot(induced.subgraph(g, membership(g_CL) == 4), edge.width = E(g)$weight, main = "Cluster 4",
+     vertex.label.family="sans",
+     vertex.size = 9,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .2,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black") #plotear cluster 4
+
+plot(induced.subgraph(g, membership(g_CL) == 28), edge.width = E(g)$weight, main = "Cluster 28",
+     vertex.label.family="sans",
+     vertex.size = 9,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .2,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black") #plotear cluster 4
+
 ```
 
 
