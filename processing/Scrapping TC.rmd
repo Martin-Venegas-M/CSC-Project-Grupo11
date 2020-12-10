@@ -13,7 +13,7 @@ Descripción: Este RMarkdown realizará la técnica de web-scrapping a la págin
 # Configuración del .rmd y carga de paquetes.
 knitr::opts_chunk$set(echo = FALSE)
 ## Paquetes
-pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2)
+pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2,igraph)
 ```
 
 ## Operación
@@ -256,10 +256,39 @@ table_Caso7<- Caso7%o%Caso7
 
 Caso8 <- as.numeric(presencia$V8) ; names(Caso8) <- presencia$Congresista
 table_Caso8<- Caso3%o%Caso8
-class(table_Caso1)
+
 Matriz_sintesis <- table_Caso1 + table_Caso2 + table_Caso3 + table_Caso4 +table_Caso5+table_Caso6+table_Caso6+table_Caso7+table_Caso8
 ```
 
+```{r}
+#Creación grafo base
+g <- graph.adjacency(Matriz_sintesis, mode = "undirected",weighted = TRUE)
+
+#Grafo con algoritmo layout Kamada-Kawaii
+plot(g, vertex.label.family="sans",
+     vertex.size = 4,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .2,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black",
+     layout =layout_with_kk)
+
+#Grafo con algoritmo de identificación de comunidades Infomap
+plot(cluster_infomap(g),g,layout = l,main="Infomap",
+     vertex.size = 4,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .2,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black")
+```
 
 
 #### Extracción de requirentes (FINDREC)
