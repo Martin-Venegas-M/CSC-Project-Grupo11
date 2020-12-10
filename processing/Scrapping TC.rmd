@@ -357,8 +357,14 @@ plot(induced.subgraph(g, membership(g_CL) == 28), edge.width = E(g)$weight, main
 
 ```
 
+```{r}
+# Save matriz
+save(Matriz_sintesis, file = "../output/matrix.RData")
+```
 
 
+
+## Codigo anterior (se guarda como respaldo())
 #### Extracción de requirentes (FINDREC)
 Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
 ```{r}

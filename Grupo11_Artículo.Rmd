@@ -1,5 +1,5 @@
 ---
-title: "La instrumentalización socio-política del Tribunal Constitucional en Chile: un análisis de las redes sociales que  participan en requerimientos de institucionalidad entre 1972 y 2020"
+title: "La instrumentalización socio-política del Tribunal Constitucional en Chile: un análisis de las redes sociales que  participan en requerimientos de institucionalidad"
 
 author: "Jan Dimter, Cristóbal Ortiz y Martín Venegas"
 date: "01-11-2020"
@@ -18,7 +18,7 @@ link-citations: yes
 
 ```{r Cargar paquetes y bases, message=FALSE, warning=FALSE, include=FALSE}
 ## Paquetes
-pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2)
+pacman::p_load(tidyverse, rvest, stringr, rebus, lubridate, sjmisc, ggplot2, igraph)
 
 ## Bases
 load("input/data/ScrapReq1972_2020.RData")
@@ -62,7 +62,7 @@ Para lograr el objetivo planteado se realiza un web scraping a la página web of
 ggplot(Req) +
  aes(x = year) +
  geom_density(adjust = 0.5, fill = "#737373") +
- labs(x = "Años", y = "Cantidad de Requerimientos presentados", title = "Distribución de Requerimientos a TC", subtitle = "1997-2020") +
+ labs(x = "Años", y = "Cantidad de Requerimientos presentados", title = "Distribución de Requerimientos a TC", subtitle = "1990-2020") +
  ggthemes::theme_base()
 ```
 
@@ -92,6 +92,108 @@ ggplot(Req_per_2014) +
 ```
 
 Resulta claro que la totalidad de requirientes ante el TC pertenece a la derecha política chilena, pero sorprende la alta concentración que obtenida a partir de aquellos militantes de la UDI. Esto se condice con la solidez en rechazar la posibilidad de una nueva constitución por parte del partido gremialista, en comparación con la división presentada en otros partidos de derecha
+
+## Figura 4
+### Red social de congresistas que han participado en requerimientos de institucionalidad entre 2014 y 2018
+```{r echo=FALSE}
+# Cargar matriz
+load("output/matrix.RData")
+
+#Creación grafo base
+g <- graph.adjacency(Matriz_sintesis, mode = "undirected",weighted = TRUE)
+
+#Grafo con algoritmo layout Kamada-Kawaii
+plot(g, vertex.label.family="sans",
+     vertex.size = 4,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = .2,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black",
+     layout =layout_with_kk)
+```
+
+
+```{r include=FALSE}
+#Ego Medidas
+  
+  #grados de nodos
+  degree(g)[degree(g)>0]
+  #Eigenvector centrality
+  eigen_centrality(g)$vector
+  #Betweenness
+  betweenness(g)
+
+#Medidas globales
+  
+  #Path length
+  average.path.length(g)
+  #diámetro: distancia entre los nodos más distantes
+  diameter(g)
+  #densidad: razón entre número de ejes observado versus potencial
+  graph.density(g)
+  
+#Identificación de clusters
+  
+  g_CL <- cluster_louvain(g) 
+  #for (i in 1:101) {print(g_CL[i])}
+  g_CL[4]
+  g_CL[28]
+  
+  
+stats <- data.frame(degree(g), betweenness(g), eigen_centrality(g)$vector)
+colnames(stats) <- c("Degree", "Betweenness", "Eigen centrality")
+stats
+```
+
+## Figura 5.
+### Red social de congresistas que han participado en requerimientos de institucionalidad entre 2014 y 2018 (acercamiento)
+![](rplot01zoom.png)
+
+## Tabla 1.
+### Medidas basicas (ego)
+```{r echo=FALSE}
+knitr::kable(stats, format="markdown")
+```
+
+## Figura 6
+### Aplicación de algoritmo de louvain para detección de comunidades: Cluster 4
+```{r echo=FALSE, fig.height=30, fig.width=40}
+#Plot cluster 4
+plot(induced.subgraph(g, membership(g_CL) == 4), edge.width = E(g)$weight, main = "Cluster 4",
+     vertex.label.family="sans",
+     vertex.size = 9,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = 3,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black") #plotear cluster 4
+
+```
+
+## Figura 7
+### Aplicación de algoritmo de louvain para detección de comunidades: Cluster 28
+```{r echo=FALSE, fig.height=30, fig.width=40}
+#Plot cluster 28
+plot(induced.subgraph(g, membership(g_CL) == 28), edge.width = E(g)$weight, main = "Cluster 28",
+     vertex.label.family="sans",
+     vertex.size = 9,
+     vertex.color = "tomato",
+     vertex.frame.color = NA,
+     vertex.label.cex = 3,
+     vertex.label.dist=.1,
+     edge.curved = .1,
+     edge.arrow.size = .1,
+     #edge.width = E(g)$width,
+     vertex.label.color = "black") #plotear cluster 4
+```
+
 
 # **Discusión y conclusiones**
 
