@@ -293,13 +293,43 @@ plot(cluster_infomap(g),g,layout = l,main="Infomap",
 
 
 ```{r}
-degree(g)[degree(g)>0]
+#Examinar grafo
 
-g_CL <- cluster_louvain(g) 
-g_CL[4]
-g_CL[28]
-#for (i in 1:101) {print(g_CL[i])}
+  #vertices
+  V(g)
+  #ejes
+  E(g)
+  #número de vertices
+  vcount(g)
+  #número de ejes
+  ecount(g)
 
+#Ego Medidas
+  
+  #grados de nodos
+  degree(g)[degree(g)>0]
+  #Eigenvector centrality
+  eigen_centrality(g)$vector
+  #Betweenness
+  betweenness(g)
+
+#Medidas globales
+  
+  #Path length
+  average.path.length(g)
+  #diámetro: distancia entre los nodos más distantes
+  diameter(g)
+  #densidad: razón entre número de ejes observado versus potencial
+  graph.density(g)
+
+#Identificación de clusters
+  
+  g_CL <- cluster_louvain(g) 
+  #for (i in 1:101) {print(g_CL[i])}
+  g_CL[4]
+  g_CL[28]
+
+#Plot cluster 4
 plot(induced.subgraph(g, membership(g_CL) == 4), edge.width = E(g)$weight, main = "Cluster 4",
      vertex.label.family="sans",
      vertex.size = 9,
@@ -312,6 +342,7 @@ plot(induced.subgraph(g, membership(g_CL) == 4), edge.width = E(g)$weight, main 
      #edge.width = E(g)$width,
      vertex.label.color = "black") #plotear cluster 4
 
+#Plot cluster 28
 plot(induced.subgraph(g, membership(g_CL) == 28), edge.width = E(g)$weight, main = "Cluster 28",
      vertex.label.family="sans",
      vertex.size = 9,
