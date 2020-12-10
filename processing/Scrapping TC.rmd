@@ -218,7 +218,6 @@ for (requiriente in lista_congresistas){
   sent8 <- rbind.data.frame(sent8, aux)}
 
 presencia <- cbind(presencia,sent1,sent2,sent3,sent4,sent5,sent6,sent7,sent8)
-`colnames<-`(presencia,"V1","V2","V3","V4","V5","V6","V7","V8")
 colnames(presencia) <-c("Congresista","V1","V2","V3","V4","V5","V6","V7","V8")
 
 #Párrafos con mayor cantidad de parlamentarios
@@ -230,6 +229,15 @@ colnames(presencia) <-c("Congresista","V1","V2","V3","V4","V5","V6","V7","V8")
 #}
 #which.max(as.numeric(colSums(df)))
 ```
+
+
+#### Matrices de adyacencia
+```{r}
+Caso1 <- as.numeric(presencia$V1) ; names(Caso1) <- presencia$Congresista
+table_Caso1<- Caso1%o%Caso1
+```
+
+
 
 #### Extracción de requirentes (FINDREC)
 Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
