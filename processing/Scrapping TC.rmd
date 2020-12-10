@@ -291,6 +291,17 @@ plot(cluster_infomap(g),g,layout = l,main="Infomap",
 ```
 
 
+```{r}
+degree(g)[degree(g)>0]
+
+g_CL <- cluster_louvain(g) 
+g_CL[4]
+g_CL[28]
+#for (i in 1:101) {print(g_CL[i])}
+```
+
+
+
 #### Extracción de requirentes (FINDREC)
 Palabra clave: miembros (ya que para presentar un Requerimiento se necesita al menos un cuarto de la corporacion)
 ```{r}
