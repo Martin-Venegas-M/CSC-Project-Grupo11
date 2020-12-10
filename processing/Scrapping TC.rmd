@@ -235,6 +235,29 @@ colnames(presencia) <-c("Congresista","V1","V2","V3","V4","V5","V6","V7","V8")
 ```{r}
 Caso1 <- as.numeric(presencia$V1) ; names(Caso1) <- presencia$Congresista
 table_Caso1<- Caso1%o%Caso1
+
+Caso2 <- as.numeric(presencia$V2) ; names(Caso2) <- presencia$Congresista
+table_Caso2<- Caso2%o%Caso2
+
+Caso3 <- as.numeric(presencia$V3) ; names(Caso3) <- presencia$Congresista
+table_Caso3<- Caso3%o%Caso3
+
+Caso4 <- as.numeric(presencia$V4) ; names(Caso4) <- presencia$Congresista
+table_Caso4<- Caso4%o%Caso4
+
+Caso5 <- as.numeric(presencia$V5) ; names(Caso5) <- presencia$Congresista
+table_Caso5<- Caso5%o%Caso5
+
+Caso6 <- as.numeric(presencia$V6) ; names(Caso6) <- presencia$Congresista
+table_Caso6<- Caso6%o%Caso6
+
+Caso7 <- as.numeric(presencia$V7) ; names(Caso7) <- presencia$Congresista
+table_Caso7<- Caso7%o%Caso7
+
+Caso8 <- as.numeric(presencia$V8) ; names(Caso8) <- presencia$Congresista
+table_Caso8<- Caso3%o%Caso8
+class(table_Caso1)
+Matriz_sintesis <- table_Caso1 + table_Caso2 + table_Caso3 + table_Caso4 +table_Caso5+table_Caso6+table_Caso6+table_Caso7+table_Caso8
 ```
 
 
