@@ -145,6 +145,43 @@ senadores_2014$Senador[21] <- "Manuel Matta Aragay"
 
 #Lista potenciales requirientes
 lista_congresistas <- c(diputados_2014$Diputado,senadores_2014$Senador)
+
+diputados_2014$Partido<-str_replace_all(diputados_2014$Partido, "\\[.*]","")
+diputados_2014$Partido<-str_replace_all(diputados_2014$Partido, "\\.","")
+table(diputados_2014$Partido)
+
+
+senadores_2014$Partido<-str_replace_all(senadores_2014$Partido, "\\[.*]","")
+senadores_2014$Partido<-str_replace_all(senadores_2014$Partido, "\\.","")
+
+
+senadores_2014$Partido[grep("Unión",senadores_2014$Partido)] <- "UDI"
+senadores_2014$Partido[grep("Socialista",senadores_2014$Partido)] <- "PS"
+senadores_2014$Partido[grep("Renovación",senadores_2014$Partido)] <- "RN"
+senadores_2014$Partido[grep("Partido por la Democracia",senadores_2014$Partido)] <- "PPD"
+senadores_2014$Partido[grep("Partido Demócrata Cristiano",senadores_2014$Partido)] <- "DC"
+senadores_2014$Partido[grep("Independiente",senadores_2014$Partido)] <- "Ind"
+partidos_congresistas <- c(diputados_2014$Partido,senadores_2014$Partido)
+table(partidos_congresistas)
+
+datos_congresistas<-data.frame(lista_congresistas,partidos_congresistas)
+datos_congresistas$color <- NA
+
+colores<-c("darkgoldenrod1","deepskyblue","khaki","chartreuse1","lightcyan2","maroon","red","darkorange1","darkseagreen1","bisque","deeppink3","chartreuse3","dodgerblue","mediumblue")
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "Amplitud"] <-"darkgoldenrod1"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "DC"] <-"deepskyblue"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "Evópoli"] <-"khaki"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "FREVS"] <-"chartreuse1"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "Ind"] <-"lightcyan2"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "Pais"] <-"maroon"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "PC"] <-"red"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "PL"] <-"darkorange1"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "PPD"] <-"darkseagreen1"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "PRSD"] <-"bisque"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "PS"] <-"deeppink3"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "RD"] <-"chartreuse3"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "RN"] <-"dodgerblue"
+datos_congresistas$color[datos_congresistas$partidos_congresistas == "UDI"] <-"mediumblue"
 ```
 
 
@@ -266,11 +303,13 @@ Matriz_sintesis <- table_Caso1 + table_Caso2 + table_Caso3 + table_Caso4 +table_
 #Creación grafo base
 g <- graph.adjacency(Matriz_sintesis, mode = "undirected",weighted = TRUE)
 
+V(g)$color <- datos_congresistas$color
+
 #Grafo con algoritmo layout Kamada-Kawaii
 plot(g,
      vertex.label.family="sans",
      vertex.size = 4,
-     vertex.color = "tomato",
+     #vertex.color = "tomato",
      vertex.frame.color = NA,
      vertex.label.cex = .2,
      vertex.label.dist=.1,
@@ -281,9 +320,12 @@ plot(g,
      layout =layout_with_kk)
 
 #Grafo con algoritmo de identificación de comunidades Infomap
+
+
+#(error, buscar objeto l)
 plot(cluster_infomap(g),g,layout = l,main="Infomap",
      vertex.size = 4,
-     vertex.color = "tomato",
+     #vertex.color = "tomato",
      vertex.frame.color = NA,
      vertex.label.cex = .2,
      vertex.label.dist=.1,
@@ -327,7 +369,7 @@ plot(cluster_infomap(g),g,layout = l,main="Infomap",
 #Identificación de clusters
   
   g_CL <- cluster_louvain(g) 
-  #for (i in 1:101) {print(g_CL[i])}
+  for (i in 1:101) {print(g_CL[i])}
   g_CL[4]
   g_CL[28]
 
@@ -335,7 +377,7 @@ plot(cluster_infomap(g),g,layout = l,main="Infomap",
 plot(induced.subgraph(g, membership(g_CL) == 4), edge.width = E(g)$weight, main = "Cluster 4",
      vertex.label.family="sans",
      vertex.size = 9,
-     vertex.color = "tomato",
+     #vertex.color = "tomato",
      vertex.frame.color = NA,
      vertex.label.cex = .2,
      vertex.label.dist=.1,
